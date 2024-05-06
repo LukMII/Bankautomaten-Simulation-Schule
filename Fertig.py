@@ -35,7 +35,7 @@ def display_main_menu():
     main_menu_window.configure(bg=background_color)  # Hintergrundfarbe einstellen
 
     # Label zur Begrüßung des Benutzers
-    label = tk.Label(main_menu_window, text="Willkommen bei der Python Bank!", font=("Arial", 16), bg=background_color, fg=text_color)
+    label = tk.Label(main_menu_window, text="Willkommen bei der Walldürner Bank!", font=("Arial", 16), bg=background_color, fg=text_color)
     label.pack(pady=20)
 
     # Funktion zur Anzeige des Kontostands

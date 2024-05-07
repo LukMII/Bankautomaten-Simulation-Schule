@@ -32,7 +32,8 @@ def display_main_menu():
     # Erstellen des Hauptmenü-Fensters
     main_menu_window = tk.Tk()
     main_menu_window.title("Hauptmenü")
-    main_menu_window.configure(bg=background_color)  # Hintergrundfarbe einstellen
+    # Hintergrundfarbe einstellen
+    main_menu_window.configure(bg=background_color)  
 
     # Label zur Begrüßung des Benutzers
     label = tk.Label(main_menu_window, text="Willkommen bei der Walldürner Bank!", font=("Arial", 16), bg=background_color, fg=text_color)
@@ -48,7 +49,7 @@ def display_main_menu():
         def withdraw_money():
             global balance
             withdraw_amount = int(withdraw_entry.get())
-            if withdraw_amount > 500 or withdraw_amount > balance:
+            if withdraw_amount > 50000 or withdraw_amount > balance:
                 messagebox.showwarning("Warnung", "Abhebungslimit überschritten oder nicht genügend Guthaben.")
             elif withdraw_amount % 10 != 0:
                 messagebox.showwarning("Warnung", "Bitte geben Sie einen Betrag ein, der durch 10 teilbar ist.")
@@ -61,7 +62,8 @@ def display_main_menu():
         # Erstellen des Abhebefensters
         withdraw_window = tk.Toplevel(main_menu_window)
         withdraw_window.title("Abheben")
-        withdraw_window.configure(bg=background_color)  # Hintergrundfarbe einstellen
+        # Hintergrundfarbe einstellen
+        withdraw_window.configure(bg=background_color)  
 
         # Label und Eingabefeld für den Betrag
         label = tk.Label(withdraw_window, text="Bitte geben Sie den Betrag ein, den Sie abheben möchten:", font=("Arial", 12), bg=background_color, fg=text_color)
@@ -87,7 +89,8 @@ def display_main_menu():
         # Erstellen des Einzahlungsfensters
         deposit_window = tk.Toplevel(main_menu_window)
         deposit_window.title("Einzahlen")
-        deposit_window.configure(bg=background_color)  # Hintergrundfarbe einstellen
+        # Hintergrundfarbe einstellen
+        deposit_window.configure(bg=background_color)  
 
         # Label und Eingabefeld für den Betrag
         label = tk.Label(deposit_window, text="Bitte geben Sie den Betrag ein, den Sie einzahlen möchten:", font=("Arial", 12), bg=background_color, fg=text_color)
@@ -101,20 +104,22 @@ def display_main_menu():
 
     # Funktion zur Anzeige der letzten Transaktionen
     def show_transaction_history():
-        transaction_str = "\n".join(transaction_history[-5:])  # Die letzten 5 Transaktionen anzeigen
+        # Die letzten 5 Transaktionen anzeigen
+        transaction_str = "\n".join(transaction_history[-5:])  
         messagebox.showinfo("Letzte Transaktionen", f"Ihre letzten Transaktionen:\n{transaction_str}")
 
     # Funktion zur Änderung der PIN
     def change_pin():
+        global pin
         new_pin = pin_entry.get()
         if len(new_pin) != 4 or not new_pin.isdigit():
             messagebox.showwarning("Warnung", "Die neue PIN muss 4-stellig sein und nur aus Zahlen bestehen.")
         else:
-            global pin
             pin = new_pin
             messagebox.showinfo("Erfolgreich", "Die PIN wurde erfolgreich geändert.")
             pin_entry.delete(0, tk.END)
-            pin_change_window.destroy()
+            if pin_change_window:
+                pin_change_window.destroy()
 
     # Funktion zum Anzeigen des PIN-Änderungsfensters
     def show_change_pin_window():
@@ -154,19 +159,22 @@ def display_main_menu():
     main_menu_window.mainloop()
 
 # Funktion zum Überprüfen der PIN
-def check_pin(pin_entry):
+def check_pin(pin_entry, pin_window):
     global counter
     global limit
-    if pin_entry == pin:
-        # Sicherheitsschlüssel generieren
-        generate_security_key()
-    else:
-        counter += 1
-        if counter >= limit:
-            messagebox.showwarning("Warnung", "Karte gesperrt! Bitte kontaktieren Sie 0800 000 111")
+    if pin_window and pin_window.winfo_exists():
+        if pin_entry == pin:
+            # Sicherheitsschlüssel generieren
+            generate_security_key()
+            # Schließe das PIN-Eingabefenster
+            pin_window.destroy()
         else:
-            messagebox.showwarning("Warnung", f"Falscher PIN! Noch {limit - counter} Versuche übrig.")
-            pin_entry.delete(0, tk.END)
+            counter += 1
+            if counter >= limit:
+                messagebox.showwarning("Warnung", "Karte gesperrt! Bitte kontaktieren Sie 0800 000 111")
+            else:
+                messagebox.showwarning("Warnung", f"Falscher PIN! Noch {limit - counter} Versuche übrig.")
+                pin_entry.delete(0, tk.END)
 
 # Funktion zum Generieren des Sicherheitsschlüssels
 def generate_security_key():
@@ -197,14 +205,14 @@ def main():
     # Hintergrundfarbe einstellen
     pin_window.configure(bg=background_color)  
 
-    # Label und Eingabefeld für die PIN
+    # Label und Eingabefeld für den PIN
     label = tk.Label(pin_window, text="Bitte geben Sie Ihren PIN ein:", font=("Arial", 12), bg=background_color, fg=text_color)
     label.pack(pady=10)
     pin_entry = tk.Entry(pin_window, font=("Arial", 12), show="*", width=20)
     pin_entry.pack(pady=10)
 
     # Button zum Bestätigen der PIN
-    submit_button = tk.Button(pin_window, text="Bestätigen", font=("Arial", 12), command=lambda: check_pin(pin_entry.get()), bg=button_color, fg=text_color)
+    submit_button = tk.Button(pin_window, text="Bestätigen", font=("Arial", 12), command=lambda: check_pin(pin_entry.get(), pin_window), bg=button_color, fg=text_color)
     submit_button.pack(pady=10)
 
     pin_window.mainloop()
